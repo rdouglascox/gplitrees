@@ -1,4 +1,4 @@
-> module DataTree (Tree (..), Elem (..)) where
+> module DataTree (Tree (..), Elem (..), SmartTree (..)) where
 
 > import DataProp
 
@@ -12,4 +12,8 @@ Here is our type for elements appearing on the tree:
 >                  ,check :: Bool
 >                  } deriving (Show, Eq)
 
+And for smarttrees:
+
+> data SmartTree = SmartBranch [Elem] [SmartTree] String [Prop]
+>    deriving (Show)
 

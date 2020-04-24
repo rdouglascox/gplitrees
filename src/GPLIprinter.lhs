@@ -1,4 +1,4 @@
-> module GPLIprinter (printtree) where
+> module GPLIprinter (printtree,printsmarttree) where
 
 > import qualified Data.Tree
 > import DataProp
@@ -35,3 +35,35 @@
 
 > printtree :: Tree -> String
 > printtree t = Data.Tree.drawTree (printabletree t)
+
+For smarttrees:
+
+> printsprop :: Prop -> String
+> printsprop (Atom (Pred1 c) p) = c : p 
+> printsprop (Atom (Pred2 c) p) = c : p 
+> printsprop (Atom (Pred3 c) p) = c : p 
+> printsprop (Neg p) = "~" ++ printsprop p
+> printsprop (Conj p q) = "(" ++ printsprop p ++ "&" ++ printsprop q ++ ")"
+> printsprop (Disj p q) = "(" ++ printsprop p ++ "v" ++ printsprop q ++ ")"
+> printsprop (Cond p q) = "(" ++ printsprop p ++ "->" ++ printsprop q ++ ")"
+> printsprop (Bicon p q) = "(" ++ printsprop p ++ "<->" ++ printsprop q ++ ")"
+> printsprop (Exi c p) = "#" ++ [c] ++ printsprop p 
+> printsprop (Uni c p) = "@" ++ [c] ++ printsprop p
+
+> printselem :: Elem -> String
+> printselem (Elem prop sub True) = (printsprop prop) ++ (ifsub sub) ++ " \x2713" 
+> printselem (Elem prop sub False) = (printsprop prop) ++ "" ++ (ifsub sub)
+
+
+> printselems :: [Elem] -> String
+> printselems xs = concat (intersperse ", " (map printselem xs))
+
+> printsabletree :: SmartTree -> Data.Tree.Tree String
+> printsabletree (SmartBranch el [] names props) = Data.Tree.Node ((printselems el) ++ " on path: " ++ names ++ " <- o") []
+> printsabletree (SmartBranch el [SmartBranch [] [] _ _] names props) = Data.Tree.Node ((printselems el) ++ " \x2717" ++ names) []
+> printsabletree (SmartBranch el ts names props) = Data.Tree.Node ((printselems el) ++  " on path: " ++ names) (map printsabletree ts)    
+
+> printsmarttree :: SmartTree -> String
+> printsmarttree t = Data.Tree.drawTree (printsabletree t)
+
+

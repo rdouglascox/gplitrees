@@ -21,7 +21,7 @@
 >                threadDelay (delay * 3) 
 >                let models = readmodels (fst (last tree))
 >                mapM_ putStrLn $ intersperse "" $ map printmodel models
->                if "-v" `elem` args
+>                if ("-v" `elem` args) && not (null models)
 >                    then verifymodels x models
 >                    else putStr ""
 >                if (null models) || (not ("-n" `elem` args))
@@ -34,19 +34,17 @@
 >                putStrLn "bye!"
 
 > verifymodels :: String -> [Model] -> IO ()
-> verifymodels xs ms = do if null ms 
->                         then do putStrLn ""
->                         else do if (and (map (val' (prepinput xs)) ms))
->                                 then do 
->                                      putStrLn "\nverifying models...\n"
->                                      setSGR [SetColor Foreground Vivid Green]
->                                      putStrLn "    all good!"
->                                      setSGR [Reset]
->                                 else do 
->                                      putStrLn "\nverifying models...\n"    
->                                      setSGR [SetColor Foreground Vivid Red]
->                                      putStrLn "    error!"
->                                      setSGR [Reset]
+> verifymodels xs ms = do if (and (map (val' (prepinput xs)) ms))
+>                             then do 
+>                                 putStrLn "\nverifying models...\n"
+>                                 setSGR [SetColor Foreground Vivid Green]
+>                                 putStrLn "    all good!"
+>                                 setSGR [Reset]
+>                             else do 
+>                                 putStrLn "\nverifying models...\n"    
+>                                 setSGR [SetColor Foreground Vivid Red]
+>                                 putStrLn "    error!"
+>                                 setSGR [Reset]
 
 > getmoremodels :: String -> Int -> [Model]
 > getmoremodels xs n = take n $ filter (val' xs) (superenum xs)  
@@ -70,8 +68,13 @@
 
 > prepinput :: String -> String
 > prepinput x = if length (lines x) == 1
->     then concat (intersperse "&" (lines x))
->     else "(" ++ (concat (intersperse "&" (lines x)))  ++ ")"
+>     then concat $ lines x
+>     else conjoin (lines x)
+
+
+> conjoin :: [String] -> String
+> conjoin (x:[]) = x
+> conjoin (x:ys) = "(" ++ x ++ "&" ++ conjoin ys ++ ")" 
 
 > val' :: String -> Model -> Bool
 > val' x y = val y (genassignment y x) (head (parser x))  

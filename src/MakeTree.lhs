@@ -304,13 +304,15 @@ First, two little helper functions.
 
 Now a new data-type. A smart-tree is a tree whose terminals on open paths carry information about all the names on the path on which they occur and all the propositions which occur on that path. (The former is for uni and exe, the latter is for id) 
 
-> data SmartTree = SmartBranch [Elem] [SmartTree] String [Prop]
->    deriving (Show)
-
 This turns an ordinary tree into a smart tree:
 
-> dumbtosmart :: String -> [Prop] -> Tree  -> SmartTree
-> dumbtosmart xs ys (Branch es ts) = (SmartBranch es (map (dumbtosmart xs ys) ts) (getnameselems xs es) (getprops ys es))  
+ dumbtosmart :: String -> [Prop] -> Tree  -> SmartTree
+ dumbtosmart xs ys (Branch es ts) = (SmartBranch es (map (dumbtosmart xs ys) ts) (getnameselems xs es) (getprops ys es))  
+
+> dumbtosmart :: String -> [Prop] -> Tree -> SmartTree
+> dumbtosmart xs ys (Branch [] []) = SmartBranch [] [] xs ys 
+> dumbtosmart xs ys (Branch es []) = SmartBranch es [] ((getnameselems xs es))   ys 
+> dumbtosmart xs ys (Branch es ts) = SmartBranch es (map (dumbtosmart (nub(xs ++ (getnameselems xs es))) (nub(ys ++ (getprops ys es )))) ts) (getnameselems xs es) (getprops ys es)
 
 This converts it back:
 
@@ -786,7 +788,7 @@ Quantifiers
 MAKETREE
 
 > imaketree' :: [(Tree,String)] -> [(Tree,String)]
-> imaketree' x | iallrules x == iallrules (iallrules x) || (length (iallrules x) > 50) = iallrules x
+> imaketree' x | iallrules x == iallrules ( iallrules (iallrules x)) = iallrules x
 >              | otherwise = imaketree' (iallrules x)
 
 > imaketree :: String -> [(Tree,String)]
