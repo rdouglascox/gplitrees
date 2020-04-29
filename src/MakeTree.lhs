@@ -1,4 +1,4 @@
-> module MakeTree (Tree(..),Elem(..),SmartTree(..),maketree,imaketree,treestats,readmodels) where
+> module MakeTree (Tree(..),Elem(..),SmartTree(..),maketree,imaketree,iimaketree,treestats,readmodels) where
 
 > import DataProp
 > import DataTree
@@ -7,12 +7,15 @@
 > import GPLIprinter
 > import GPLIevaluator
 > import PrintModels
+> import Control.Concurrent
+> import System.Console.ANSI
 
 Here is our tree type:
 
 GENERAL FUNCTIONS
 
 Here is a function which adds a list of elements to all open paths on a tree.
+
 
 > addnonbranching :: [Elem] -> Tree -> Tree
 > addnonbranching center (Branch [] [] ) = Branch [] []
@@ -23,8 +26,8 @@ Here is a function which adds a left list and a right list to new branches on al
 
 > addbranching :: ([Elem],[Elem]) -> Tree -> Tree
 > addbranching (left, right) (Branch [] []) = Branch [] []
-> addbranching (left, right) (Branch ys []) = Branch ys [Branch left [], Branch right []]
-> addbranching (left, right) (Branch ys ts) = Branch ys (map (addbranching (left, right)) ts)
+> addbranching (left, right) (Branch ys []) = Branch ys [Branch right [], Branch left []]
+> addbranching (left, right) (Branch ys ts) = Branch ys ((map (addbranching (right, left)) ts))
 
 CONJUNCTION
 
@@ -311,7 +314,7 @@ This turns an ordinary tree into a smart tree:
 
 > dumbtosmart :: String -> [Prop] -> Tree -> SmartTree
 > dumbtosmart xs ys (Branch [] []) = SmartBranch [] [] xs ys 
-> dumbtosmart xs ys (Branch es []) = SmartBranch es [] ((getnameselems xs es))   ys 
+> dumbtosmart xs ys (Branch es []) = SmartBranch es [] ((getnameselems xs es))   (getprops ys es)
 > dumbtosmart xs ys (Branch es ts) = SmartBranch es (map (dumbtosmart (nub(xs ++ (getnameselems xs es))) (nub(ys ++ (getprops ys es )))) ts) (getnameselems xs es) (getprops ys es)
 
 This converts it back:
@@ -664,7 +667,9 @@ MAKETREE
 > maketree :: String -> Tree
 > maketree x = loopid $ maketree' (gentree (lines x))
 
-INCREMENTAL MAKETREE
+END OF ORDINARY MAKETREE
+
+INCREMENTAL MAKETREE I
 
 Okay, the idea for the incremental maketree function is to generalise the above so that each rule takes a list of trees as input and produces a list of trees as output. If the rule applies, it returns the list with the new tree appended to the end. If it doesn't apply it returns the old list unchanged. We might as well do this properly. We will make the list not just a list of trees, but a list of pairs of trees and strings. The string says what rule has been applied.  
 
@@ -778,8 +783,6 @@ Quantifiers
 >                 then xs ++ [(applyid (fst (last xs)),"applying the substitution of identicals rule...")]
 >                 else xs
 
-
-
 > iloopid x | iidd x == iidd (iidd x) = iidd x
 >          | otherwise = iloopid (iidd x)
 
@@ -793,6 +796,299 @@ MAKETREE
 
 > imaketree :: String -> [(Tree,String)]
 > imaketree x = iloopid $ imaketree' (igentree (lines x))
+
+END OF INCREMENTAL MAKETREE I
+
+INCREMENTAL MAKETREE II
+
+Okay, the idea for the incremental maketree function is to generalise the above so that each rule takes a list of trees as input and produces a list of trees as output. If the rule applies, it returns the list with the new tree appended to the end. If it doesn't apply it returns the old list unchanged. We might as well do this properly. We will make the list not just a list of trees, but a list of pairs of trees and strings. The string says what rule has been applied.  
+
+
+> iicfc :: Tree -> IO (Tree)
+> iicfc xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= cfc xs 
+>                    then do 
+>                         putStrLn "applied the rule for closure...\n"
+>                         putStrLn (printtree $ cfc xs)
+>                         threadDelay mydelay
+>                         return (cfc xs)
+>                    else do
+>                         return (xs)
+
+> mydelay = 1000000
+
+> iigentree :: [String] -> IO (Tree)
+> iigentree xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                putStrLn "set up the tree...\n"
+>                putStrLn (printtree $ gentree xs)
+>                threadDelay mydelay
+>                return (gentree xs)
+
+
+
+Branching
+
+> iidisj xs = (iiapplydisj xs) >>= iicfc
+> iinegconj xs = (iiapplynegconj xs) >>= iicfc
+> iicon xs = (iiapplycon xs) >>= iicfc
+> iibicon xs = (iiapplybicon xs) >>= iicfc
+> iinegbicon xs = (iiapplynegbicon xs) >>= iicfc
+
+
+> iiapplydisj :: Tree -> IO (Tree)
+> iiapplydisj xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applydisj xs 
+>                    then do 
+>                         putStrLn "applied the rule for disjunction...\n"
+>                         putStrLn (printtree $ applydisj xs)
+>                         threadDelay mydelay
+>                         return (applydisj xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegconj :: Tree -> IO (Tree)
+> iiapplynegconj xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applynegconj xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated conjunction...\n"
+>                         putStrLn (printtree $ applynegconj xs)
+>                         threadDelay mydelay
+>                         return (applynegconj xs)
+>                    else do
+>                         return (xs)
+
+> iiapplycon :: Tree -> IO (Tree)
+> iiapplycon xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applycond xs 
+>                    then do 
+>                         putStrLn "applied the rule for conditional...\n"
+>                         putStrLn (printtree $ applycond xs)
+>                         threadDelay mydelay
+>                         return (applycond xs)
+>                    else do
+>                         return (xs)
+
+> iiapplybicon :: Tree -> IO (Tree)
+> iiapplybicon xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applybicond xs 
+>                    then do 
+>                         putStrLn "applied the rule for biconditional...\n"
+>                         putStrLn (printtree $ applybicond xs)
+>                         threadDelay mydelay
+>                         return (applybicond xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegbicon :: Tree -> IO (Tree)
+> iiapplynegbicon xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applynegbicond xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated biconditional...\n"
+>                         putStrLn (printtree $ applynegbicond xs)
+>                         threadDelay mydelay
+>                         return (applynegbicond xs)
+>                    else do
+>                         return (xs)
+
+NonBranching
+
+> iiconj xs = (iiapplyconj xs) >>= iicfc
+> iinegdisj xs = (iiapplynegdisj xs) >>= iicfc
+> iinegcon xs = (iiapplynegcon xs) >>= iicfc
+> iinegsome xs = (iiapplynegsome xs) >>= iicfc
+> iinegall xs = (iiapplynegall xs) >>= iicfc
+
+
+> iiapplyconj :: Tree -> IO (Tree)
+> iiapplyconj xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applyconj xs 
+>                    then do 
+>                         putStrLn "applied the rule for conjunction...\n"
+>                         putStrLn (printtree $ applyconj xs)
+>                         threadDelay mydelay
+>                         return (applyconj xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegdisj :: Tree -> IO (Tree)
+> iiapplynegdisj xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applynegdisj xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated disjunction...\n"
+>                         putStrLn (printtree $ applynegdisj xs)
+>                         threadDelay mydelay
+>                         return (applynegdisj xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegcon :: Tree -> IO (Tree)
+> iiapplynegcon xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applynegcond xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated conditional...\n"
+>                         putStrLn (printtree $ applynegcond xs)
+>                         threadDelay mydelay
+>                         return (applynegcond xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegsome :: Tree -> IO (Tree)
+> iiapplynegsome xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applynegexe xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated existential...\n"
+>                         putStrLn (printtree $ applynegexe xs)
+>                         threadDelay mydelay
+>                         return (applynegexe xs)
+>                    else do
+>                         return (xs)
+
+> iiapplynegall :: Tree -> IO (Tree)
+> iiapplynegall xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applyneguni xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated universal...\n"
+>                         putStrLn (printtree $ applyneguni xs)
+>                         threadDelay mydelay
+>                         return (applyneguni xs)
+>                    else do
+>                         return (xs)
+
+Double Negation
+
+> iidneg xs = (iiapplydneg xs) >>= iicfc
+
+> iiapplydneg :: Tree -> IO (Tree)
+> iiapplydneg xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applydneg xs 
+>                    then do 
+>                         putStrLn "applied the rule for double negation...\n"
+>                         putStrLn (printtree $ applydneg xs)
+>                         threadDelay mydelay
+>                         return (applydneg xs)
+>                    else do
+>                         return (xs)
+
+Quantifiers
+
+> iiexi xs = (iiapplyexi xs) >>= iicfc
+> iiuni xs = (iiapplyuni xs) >>= iicfc
+
+> iiapplyexi :: Tree -> IO (Tree)
+> iiapplyexi xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applyexi xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated universal...\n"
+>                         putStrLn (printtree $ applyexi xs)
+>                         threadDelay mydelay
+>                         return (applyexi xs)
+>                    else do
+>                         return (xs)
+
+> iiapplyuni :: Tree -> IO (Tree)
+> iiapplyuni xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applyuni xs 
+>                    then do 
+>                         putStrLn "applied the rule for negated universal...\n"
+>                         putStrLn (printtree $ applyuni xs)
+>                         threadDelay mydelay
+>                         return (applyuni xs)
+>                    else do
+>                         return (xs)
+
+> iiloopdneg :: Tree -> IO (Tree) 
+> iiloopdneg x = do
+>                old <- iidneg x
+>                new <- iidneg old
+>                if old == new
+>                    then return (new)
+>                    else iiloopdneg new
+
+
+> iiallnon xs = iiloopdneg xs >>= iiconj >>= iiloopdneg >>= iinegdisj >>= iiloopdneg >>= iinegcon >>= iiloopdneg >>= iinegsome >>= iiloopdneg >>= iinegall
+
+> iiloopnon :: Tree -> IO (Tree)
+> iiloopnon x = do
+>               old <- iiallnon x
+>               new <- iiallnon old
+>               if old == new
+>                    then return (new)
+>                    else iiloopnon new
+
+
+> iialls' xs = iiallnon xs >>= iidisj >>= iiallnon >>= iinegconj >>= iiallnon >>= iicon >>= iiallnon >>= iibicon >>= iiallnon >>= iinegbicon >>= iiallnon >>= iiexi >>= iiallnon
+
+
+> iiidd x = (iiapplyid x) >>= iicfc
+
+> iiapplyid :: Tree -> IO (Tree)
+> iiapplyid xs = do
+>                clearScreen
+>                setCursorPosition 0 0
+>                if xs /= applyid xs 
+>                    then do 
+>                         putStrLn "applied the substitution of identicals rule...\n"
+>                         putStrLn (printtree $ applyid xs)
+>                         threadDelay mydelay
+>                         return (applyid xs)
+>                    else do
+>                         return (xs)
+
+> iiloopid x = do
+>              old <- iiidd x
+>              new <- iiidd old
+>              if old == new
+>                   then return (new)
+>                   else iiloopid new
+
+
+> iiallrules xs = (iialls' xs) >>= iiuni
+
+> makeloop x = do
+>              old <- iiallrules x
+>              new <- iiallrules old
+>              if old == new
+>                   then return (new)
+>                   else makeloop new
+
+> iimaketree :: String -> IO (Tree)
+> iimaketree x = (iigentree (lines x)) >>= makeloop >>= iiloopid
+
+
+END OF MAKETREE II
+
+
+
 
 TREE STATS
 

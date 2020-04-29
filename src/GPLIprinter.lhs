@@ -36,6 +36,11 @@
 > printtree :: Tree -> String
 > printtree t = Data.Tree.drawTree (printabletree t)
 
+ printtreeh :: Tree -> String
+ printtreeh t = Pretty.drawVerticalTree (printabletree t)
+
+
+
 For smarttrees:
 
 > printsprop :: Prop -> String
@@ -59,11 +64,12 @@ For smarttrees:
 > printselems xs = concat (intersperse ", " (map printselem xs))
 
 > printsabletree :: SmartTree -> Data.Tree.Tree String
-> printsabletree (SmartBranch el [] names props) = Data.Tree.Node ((printselems el) ++ " on path: " ++ names ++ " <- o") []
+> printsabletree (SmartBranch el [] names props) = Data.Tree.Node ((printselems el) ++ " on path: " ++ names ++ ", " ++ (show props) ++ " <- o") []
 > printsabletree (SmartBranch el [SmartBranch [] [] _ _] names props) = Data.Tree.Node ((printselems el) ++ " \x2717" ++ names) []
-> printsabletree (SmartBranch el ts names props) = Data.Tree.Node ((printselems el) ++  " on path: " ++ names) (map printsabletree ts)    
+> printsabletree (SmartBranch el ts names props) = Data.Tree.Node ((printselems el) ++  " on path: " ++ names ++ ", " ++ (show props)) (map printsabletree ts)    
 
 > printsmarttree :: SmartTree -> String
 > printsmarttree t = Data.Tree.drawTree (printsabletree t)
+
 
 

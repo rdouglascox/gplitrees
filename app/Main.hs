@@ -4,4 +4,4 @@ import Lib
 import PrintTreeInc
 
 main :: IO ()
-main = printtreeinc
+main = select

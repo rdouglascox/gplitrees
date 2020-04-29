@@ -1,0 +1,172 @@
+	Thu Apr 30 08:28 2020 Time and Allocation Profiling Report  (Final)
+
+	   gplitrees +RTS -N -p -RTS -v
+
+	total time  =        0.00 secs   (1 ticks @ 1000 us, 4 processors)
+	total alloc =     169,696 bytes  (excludes profiling overheads)
+
+COST CENTRE    MODULE           SRC                                  %time %alloc
+
+dneg           MakeTree         src/MakeTree.lhs:635:3-30            100.0    5.3
+MAIN           MAIN             <built-in>                             0.0   40.2
+CAF            GHC.IO.Handle.FD <entire-module>                        0.0   30.7
+CAF            GHC.IO.Encoding  <entire-module>                        0.0    1.9
+CAF:treestats3 MakeTree         <no location info>                     0.0    1.4
+select         PrintTreeInc     src/PrintTreeInc.lhs:(13,3)-(16,30)    0.0    1.5
+printtreeinc'' PrintTreeInc     src/PrintTreeInc.lhs:(23,3)-(38,39)    0.0   13.4
+
+
+                                                                                                          individual      inherited
+COST CENTRE               MODULE                  SRC                                 no.      entries  %time %alloc   %time %alloc
+
+MAIN                      MAIN                    <built-in>                           670          0    0.0   40.2   100.0  100.0
+ CAF                      GHC.Conc.Signal         <entire-module>                      784          0    0.0    0.4     0.0    0.4
+ CAF                      GHC.IO.Encoding         <entire-module>                      768          0    0.0    1.9     0.0    1.9
+ CAF                      GHC.IO.Encoding.Iconv   <entire-module>                      766          0    0.0    0.1     0.0    0.1
+ CAF                      GHC.IO.Exception        <entire-module>                      760          0    0.0    0.4     0.0    0.4
+ CAF                      GHC.IO.Handle.FD        <entire-module>                      758          0    0.0   30.7     0.0   30.7
+ CAF                      GHC.IO.Handle.Internals <entire-module>                      757          0    0.0    0.0     0.0    0.0
+ CAF                      GHC.IO.Handle.Text      <entire-module>                      756          0    0.0    0.0     0.0    0.0
+ CAF                      GHC.Event.Thread        <entire-module>                      715          0    0.0    0.7     0.0    0.7
+ CAF                      GHC.Event.Poll          <entire-module>                      688          0    0.0    0.0     0.0    0.0
+ CAF:lvl20_rnQ4           GPLIprinter             <no location info>                  1183          0    0.0    0.2     0.0    0.2
+ CAF:lvl33_rTP2           PrintTreeInc            <no location info>                  1304          0    0.0    0.2     0.0    0.2
+ CAF:lvl37_rTP6           PrintTreeInc            <no location info>                  1306          0    0.0    0.1     0.0    0.1
+ CAF:lvl42_rTPd           PrintTreeInc            <no location info>                  1307          0    0.0    0.0     0.0    0.0
+ CAF:main1                Main                    <no location info>                  1338          0    0.0    0.0     0.0    0.0
+  main                    Main                    app/Main.hs:7:1-13                  1340          1    0.0    0.0     0.0    0.0
+ CAF:select1              PrintTreeInc            <no location info>                  1310          0    0.0    0.0     0.0    0.0
+  select                  PrintTreeInc            src/PrintTreeInc.lhs:(13,3)-(16,30) 1341          1    0.0    0.0     0.0    0.0
+ CAF:select2              PrintTreeInc            <no location info>                  1309          0    0.0    0.1     0.0    0.1
+ CAF:treestats3           MakeTree                <no location info>                  1166          0    0.0    1.4     0.0    1.4
+ select                   PrintTreeInc            src/PrintTreeInc.lhs:(13,3)-(16,30) 1342          0    0.0    1.5   100.0   23.5
+  selecthelper            PrintTreeInc            src/PrintTreeInc.lhs:(19,3)-(20,57) 1343          1    0.0    0.0   100.0   22.0
+   printtreeinc''         PrintTreeInc            src/PrintTreeInc.lhs:(23,3)-(38,39) 1344          1    0.0   13.4   100.0   22.0
+    printtree             GPLIprinter             src/GPLIprinter.lhs:37:3-52         1345          1    0.0    0.7     0.0    0.7
+     printabletree        GPLIprinter             src/GPLIprinter.lhs:(32,3)-(34,86)  1466          1    0.0    0.0     0.0    0.0
+      printelems          GPLIprinter             src/GPLIprinter.lhs:29:3-62         1467          1    0.0    0.0     0.0    0.0
+    printtreeinc''.models PrintTreeInc            src/PrintTreeInc.lhs:28:29-52       1470          1    0.0    0.0     0.0    0.0
+     readmodels           MakeTree                src/MakeTree.lhs:1196:3-43          1471          1    0.0    0.0     0.0    0.0
+      getpaths            MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1472          1    0.0    0.0     0.0    0.0
+    printtreeinc''.tree   PrintTreeInc            src/PrintTreeInc.lhs:24:29-45       1346          1    0.0    0.0   100.0    7.8
+     maketree             MakeTree                src/MakeTree.lhs:668:3-53           1347          1    0.0    0.0   100.0    7.8
+      gentree             MakeTree                src/MakeTree.lhs:1201:3-37          1348          1    0.0    0.0     0.0    0.0
+       gentest            MakeTree                src/MakeTree.lhs:(1204,3)-(1205,44) 1349          1    0.0    0.0     0.0    0.0
+      loopid              MakeTree                src/MakeTree.lhs:(655,3)-(656,39)   1454          1    0.0    0.0     0.0    0.4
+       idd                MakeTree                src/MakeTree.lhs:653:3-25           1455          3    0.0    0.0     0.0    0.4
+        cfc               MakeTree                src/MakeTree.lhs:605:3-47           1461          4    0.0    0.0     0.0    0.0
+         checkpaths       MakeTree                src/MakeTree.lhs:583:3-62           1463          4    0.0    0.0     0.0    0.0
+         getpaths         MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1462          4    0.0    0.0     0.0    0.0
+         killpaths        MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1464          4    0.0    0.0     0.0    0.0
+        applyid           MakeTree                src/MakeTree.lhs:559:3-62           1456          3    0.0    0.1     0.0    0.4
+         applyidsmart     MakeTree                src/MakeTree.lhs:(554,3)-(556,56)   1458          4    0.0    0.2     0.0    0.2
+          hasid           MakeTree                src/MakeTree.lhs:529:3-39           1459          4    0.0    0.0     0.0    0.0
+         smarttodumb      MakeTree                src/MakeTree.lhs:323:3-76           1460          4    0.0    0.0     0.0    0.0
+         dumbtosmart      MakeTree                src/MakeTree.lhs:(316,3)-(318,179)  1457          3    0.0    0.1     0.0    0.1
+       ==                 DataTree                src/DataTree.lhs:6:29-30            1465          1    0.0    0.0     0.0    0.0
+      maketree'           MakeTree                src/MakeTree.lhs:(664,3)-(665,49)   1350          1    0.0    0.0   100.0    7.4
+       allrules           MakeTree                src/MakeTree.lhs:659:3-30           1351          3    0.0    0.0   100.0    7.4
+        alls'             MakeTree                src/MakeTree.lhs:651:3-125          1352          3    0.0    0.0   100.0    7.2
+         allnon           MakeTree                src/MakeTree.lhs:646:3-125          1353         21    0.0    0.0   100.0    6.8
+          loopdneg        MakeTree                src/MakeTree.lhs:(643,3)-(644,44)   1354        126    0.0    0.0   100.0    5.3
+           dneg           MakeTree                src/MakeTree.lhs:635:3-30           1355        378  100.0    5.3   100.0    5.3
+            cfc           MakeTree                src/MakeTree.lhs:605:3-47           1358        504    0.0    0.0     0.0    0.0
+             checkpaths   MakeTree                src/MakeTree.lhs:583:3-62           1360        504    0.0    0.0     0.0    0.0
+             getpaths     MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1359        504    0.0    0.0     0.0    0.0
+             killpaths    MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1361        504    0.0    0.0     0.0    0.0
+            applydneg     MakeTree                src/MakeTree.lhs:(72,3)-(74,44)     1356        378    0.0    0.0     0.0    0.0
+             hasdneg      MakeTree                src/MakeTree.lhs:(57,3)-(59,39)     1357        378    0.0    0.0     0.0    0.0
+           ==             DataTree                src/DataTree.lhs:6:29-30            1362        126    0.0    0.0     0.0    0.0
+          conj            MakeTree                src/MakeTree.lhs:627:3-30           1363         21    0.0    0.3     0.0    0.3
+           applyconj      MakeTree                src/MakeTree.lhs:(50,3)-(52,44)     1364         21    0.0    0.0     0.0    0.0
+            hasconj       MakeTree                src/MakeTree.lhs:(35,3)-(37,39)     1365         21    0.0    0.0     0.0    0.0
+           cfc            MakeTree                src/MakeTree.lhs:605:3-47           1366         21    0.0    0.0     0.0    0.0
+            checkpaths    MakeTree                src/MakeTree.lhs:583:3-62           1368         21    0.0    0.0     0.0    0.0
+            getpaths      MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1367         21    0.0    0.0     0.0    0.0
+            killpaths     MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1369         21    0.0    0.0     0.0    0.0
+          negall          MakeTree                src/MakeTree.lhs:631:3-34           1391         21    0.0    0.3     0.0    0.3
+           applyneguni    MakeTree                src/MakeTree.lhs:(270,3)-(272,46)   1392         21    0.0    0.0     0.0    0.0
+            hasneguni     MakeTree                src/MakeTree.lhs:(255,3)-(257,41)   1393         21    0.0    0.0     0.0    0.0
+           cfc            MakeTree                src/MakeTree.lhs:605:3-47           1394         21    0.0    0.0     0.0    0.0
+            checkpaths    MakeTree                src/MakeTree.lhs:583:3-62           1396         21    0.0    0.0     0.0    0.0
+            getpaths      MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1395         21    0.0    0.0     0.0    0.0
+            killpaths     MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1397         21    0.0    0.0     0.0    0.0
+          negcon          MakeTree                src/MakeTree.lhs:629:3-35           1377         21    0.0    0.3     0.0    0.3
+           applynegcond   MakeTree                src/MakeTree.lhs:(182,3)-(184,47)   1378         21    0.0    0.0     0.0    0.0
+            hasnegcond    MakeTree                src/MakeTree.lhs:(167,3)-(169,42)   1379         21    0.0    0.0     0.0    0.0
+           cfc            MakeTree                src/MakeTree.lhs:605:3-47           1380         21    0.0    0.0     0.0    0.0
+            checkpaths    MakeTree                src/MakeTree.lhs:583:3-62           1382         21    0.0    0.0     0.0    0.0
+            getpaths      MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1381         21    0.0    0.0     0.0    0.0
+            killpaths     MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1383         21    0.0    0.0     0.0    0.0
+          negdisj         MakeTree                src/MakeTree.lhs:628:3-36           1370         21    0.0    0.3     0.0    0.3
+           applynegdisj   MakeTree                src/MakeTree.lhs:(138,3)-(140,47)   1371         21    0.0    0.0     0.0    0.0
+            hasnegdisj    MakeTree                src/MakeTree.lhs:(123,3)-(125,42)   1372         21    0.0    0.0     0.0    0.0
+           cfc            MakeTree                src/MakeTree.lhs:605:3-47           1373         21    0.0    0.0     0.0    0.0
+            checkpaths    MakeTree                src/MakeTree.lhs:583:3-62           1375         21    0.0    0.0     0.0    0.0
+            getpaths      MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1374         21    0.0    0.0     0.0    0.0
+            killpaths     MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1376         21    0.0    0.0     0.0    0.0
+          negsome         MakeTree                src/MakeTree.lhs:630:3-35           1384         21    0.0    0.3     0.0    0.3
+           applynegexe    MakeTree                src/MakeTree.lhs:(292,3)-(294,46)   1385         21    0.0    0.0     0.0    0.0
+            hasnegexe     MakeTree                src/MakeTree.lhs:(277,3)-(279,41)   1386         21    0.0    0.0     0.0    0.0
+           cfc            MakeTree                src/MakeTree.lhs:605:3-47           1387         21    0.0    0.0     0.0    0.0
+            checkpaths    MakeTree                src/MakeTree.lhs:583:3-62           1389         21    0.0    0.0     0.0    0.0
+            getpaths      MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1388         21    0.0    0.0     0.0    0.0
+            killpaths     MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1390         21    0.0    0.0     0.0    0.0
+         bicon            MakeTree                src/MakeTree.lhs:622:3-33           1419          3    0.0    0.0     0.0    0.0
+          applybicond     MakeTree                src/MakeTree.lhs:(204,3)-(206,46)   1420          3    0.0    0.0     0.0    0.0
+           hasbicond      MakeTree                src/MakeTree.lhs:(189,3)-(191,41)   1421          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1422          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1424          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1423          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1425          3    0.0    0.0     0.0    0.0
+         con              MakeTree                src/MakeTree.lhs:621:3-29           1412          3    0.0    0.0     0.0    0.0
+          applycond       MakeTree                src/MakeTree.lhs:(160,3)-(162,44)   1413          3    0.0    0.0     0.0    0.0
+           hascond        MakeTree                src/MakeTree.lhs:(145,3)-(147,39)   1414          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1415          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1417          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1416          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1418          3    0.0    0.0     0.0    0.0
+         disj             MakeTree                src/MakeTree.lhs:619:3-30           1398          3    0.0    0.0     0.0    0.0
+          applydisj       MakeTree                src/MakeTree.lhs:(116,3)-(118,44)   1399          3    0.0    0.0     0.0    0.0
+           hasdisj        MakeTree                src/MakeTree.lhs:(101,3)-(103,39)   1400          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1401          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1403          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1402          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1404          3    0.0    0.0     0.0    0.0
+         exi              MakeTree                src/MakeTree.lhs:639:3-28           1433          3    0.0    0.0     0.0    0.2
+          applyexi        MakeTree                src/MakeTree.lhs:389:3-64           1434          3    0.0    0.1     0.0    0.2
+           applyexismart  MakeTree                src/MakeTree.lhs:(384,3)-(386,57)   1436          3    0.0    0.0     0.0    0.0
+            hasexi        MakeTree                src/MakeTree.lhs:(356,3)-(358,38)   1437          3    0.0    0.0     0.0    0.0
+           dumbtosmart    MakeTree                src/MakeTree.lhs:(316,3)-(318,179)  1435          3    0.0    0.1     0.0    0.1
+           smarttodumb    MakeTree                src/MakeTree.lhs:323:3-76           1438          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1439          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1441          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1440          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1442          3    0.0    0.0     0.0    0.0
+         negbicon         MakeTree                src/MakeTree.lhs:623:3-39           1426          3    0.0    0.0     0.0    0.0
+          applynegbicond  MakeTree                src/MakeTree.lhs:(226,3)-(228,49)   1427          3    0.0    0.0     0.0    0.0
+           hasnegbicond   MakeTree                src/MakeTree.lhs:(211,3)-(213,44)   1428          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1429          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1431          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1430          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1432          3    0.0    0.0     0.0    0.0
+         negconj          MakeTree                src/MakeTree.lhs:620:3-36           1405          3    0.0    0.0     0.0    0.0
+          applynegconj    MakeTree                src/MakeTree.lhs:(94,3)-(96,47)     1406          3    0.0    0.0     0.0    0.0
+           hasnegconj     MakeTree                src/MakeTree.lhs:(79,3)-(81,42)     1407          3    0.0    0.0     0.0    0.0
+          cfc             MakeTree                src/MakeTree.lhs:605:3-47           1408          3    0.0    0.0     0.0    0.0
+           checkpaths     MakeTree                src/MakeTree.lhs:583:3-62           1410          3    0.0    0.0     0.0    0.0
+           getpaths       MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1409          3    0.0    0.0     0.0    0.0
+           killpaths      MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1411          3    0.0    0.0     0.0    0.0
+        uni               MakeTree                src/MakeTree.lhs:640:3-28           1443          3    0.0    0.0     0.0    0.2
+         applyuni         MakeTree                src/MakeTree.lhs:437:3-64           1444          3    0.0    0.1     0.0    0.2
+          applyunismart   MakeTree                src/MakeTree.lhs:(432,3)-(434,57)   1446          3    0.0    0.0     0.0    0.0
+           hasuni         MakeTree                src/MakeTree.lhs:406:3-41           1447          3    0.0    0.0     0.0    0.0
+          dumbtosmart     MakeTree                src/MakeTree.lhs:(316,3)-(318,179)  1445          3    0.0    0.1     0.0    0.1
+          smarttodumb     MakeTree                src/MakeTree.lhs:323:3-76           1448          3    0.0    0.0     0.0    0.0
+         cfc              MakeTree                src/MakeTree.lhs:605:3-47           1449          3    0.0    0.0     0.0    0.0
+          checkpaths      MakeTree                src/MakeTree.lhs:583:3-62           1451          3    0.0    0.0     0.0    0.0
+          getpaths        MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1450          3    0.0    0.0     0.0    0.0
+          killpaths       MakeTree                src/MakeTree.lhs:(601,3)-(602,20)   1452          3    0.0    0.0     0.0    0.0
+       ==                 DataTree                src/DataTree.lhs:6:29-30            1453          1    0.0    0.0     0.0    0.0
+    treestats             MakeTree                src/MakeTree.lhs:(1096,3)-(1098,84) 1468          1    0.0    0.0     0.0    0.0
+     getpaths             MakeTree                src/MakeTree.lhs:(568,3)-(570,64)   1469          1    0.0    0.0     0.0    0.0
