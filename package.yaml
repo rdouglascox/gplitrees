@@ -40,8 +40,6 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     - -O2
-    - -prof
-    - -fprof-auto
     dependencies:
     - gplitrees
 

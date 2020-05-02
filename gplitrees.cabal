@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: f89477d49b1845db4f37f18a5f938b3f23e93045d32b8383b83595c06544be61
+-- hash: 2a7d4f03aa6177c3cf2b5c2428b9ecbe6e73ec7ca929f6d84a9dec27151d21d4
 
 name:           gplitrees
 version:        0.1.0.0
@@ -58,7 +58,7 @@ executable gplitrees
       Paths_gplitrees
   hs-source-dirs:
       app
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N -O2 -prof -fprof-auto
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -O2
   build-depends:
       ansi-terminal
     , base >=4.7 && <5

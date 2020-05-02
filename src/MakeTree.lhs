@@ -8,9 +8,21 @@
 > import GPLIevaluator
 > import PrintModels
 > import Control.Concurrent
+> import Control.Parallel.Strategies
 > import System.Console.ANSI
 
-Here is our tree type:
+FOR PARALLELISM
+
+> myparMap :: (a->b) -> [a] -> Eval [b]
+> myparMap f [] = return []
+> myparMap f (a:as) = do
+>     b <- rpar (f a)
+>     bs <- myparMap f as
+>     return (b:bs)
+
+> mymap x y = runEval (myparMap x y)
+
+> myconcatMap x y = concat (mymap x y)
 
 GENERAL FUNCTIONS
 
@@ -580,7 +592,8 @@ CHECK FOR CONTRADICTIONS
 
 
 > checkpaths :: [Path] -> [Path]
-> checkpaths xs = [ x | x <- xs, checkpath (getpropsonpath x)]
+> checkpaths xs = [ x | x <- xs, (checkpath (getpropsonpath x))]
+
 
 > checkpath :: [Prop] -> Bool
 > checkpath ps = (or (map (\x -> (x `elem` ps) && ((Neg x) `elem` ps)) ps)) || or (newclosure ps)
@@ -601,15 +614,24 @@ CHECK FOR CONTRADICTIONS
 > killpaths (y:ys) x = killpaths ys (killpath y x)
 > killpaths [] x = x
 
-> cfc :: Tree -> Tree
-> cfc x = killpaths (checkpaths (getpaths x)) x  
+> oldcfc :: Tree -> Tree
+> oldcfc x = killpaths (checkpaths (getpaths x)) x  
 
-> icfc :: [(Tree,String)] -> [(Tree,String)]
-> icfc xs = if (fst (last xs)) /= cfc (fst (last xs)) 
->                 then xs ++ [(cfc (fst (last xs)),"applying closure rule...")]
->                 else xs
+> cfc = smartcfc
 
+SMARTCFC
 
+Profiling suggests that this method of checking for contradictions is not very efficient. Let's re-implement cfc in terms of smart-trees. After all, a smart tree caries with it information about all propositions on the path. We can just check these and change the path to a closed one. It should be more efficient this way. 
+
+> smartcfc :: Tree -> Tree
+> smartcfc t = smarttodumb (closepaths (dumbtosmart [] [] t))
+
+> closepaths :: SmartTree -> SmartTree
+> closepaths (SmartBranch [] [] ns ps) = SmartBranch [] [] ns ps 
+> closepaths (SmartBranch es [] ns ps) = if checkpath ps
+>                                            then SmartBranch es [SmartBranch [] [] ns ps] ns ps
+>                                            else SmartBranch es [] ns ps  
+> closepaths (SmartBranch es ts ns ps) = SmartBranch es (map closepaths ts) ns ps
 
 
 ALL RULES
@@ -765,6 +787,13 @@ Quantifiers
 > iapplyuni xs = if (fst (last xs)) /= applyuni (fst (last xs)) 
 >                 then xs ++ [(applyuni (fst (last xs)),"applying the rule for universal...")]
 >                 else xs
+
+
+> icfc :: [(Tree,String)] -> [(Tree,String)]
+> icfc xs = if (fst (last xs)) /= cfc (fst (last xs)) 
+>                 then xs ++ [(cfc (fst (last xs)),"applying closure rule...")]
+>                 else xs
+
 
 > iloopdneg x | idneg x == idneg (idneg x) = idneg x
 >             | otherwise = iloopdneg (idneg x)
@@ -1006,7 +1035,7 @@ Quantifiers
 >                setCursorPosition 0 0
 >                if xs /= applyexi xs 
 >                    then do 
->                         putStrLn "applied the rule for negated universal...\n"
+>                         putStrLn "applied the rule for existential quantifier...\n"
 >                         putStrLn (printtree $ applyexi xs)
 >                         threadDelay mydelay
 >                         return (applyexi xs)
@@ -1019,7 +1048,7 @@ Quantifiers
 >                setCursorPosition 0 0
 >                if xs /= applyuni xs 
 >                    then do 
->                         putStrLn "applied the rule for negated universal...\n"
+>                         putStrLn "applied the rule for universal quantifier...\n"
 >                         putStrLn (printtree $ applyuni xs)
 >                         threadDelay mydelay
 >                         return (applyuni xs)
