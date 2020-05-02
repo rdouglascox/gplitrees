@@ -617,7 +617,7 @@ CHECK FOR CONTRADICTIONS
 > oldcfc :: Tree -> Tree
 > oldcfc x = killpaths (checkpaths (getpaths x)) x  
 
-> cfc = smartcfc
+> cfc = smartercfc
 
 SMARTCFC
 
@@ -633,33 +633,38 @@ Profiling suggests that this method of checking for contradictions is not very e
 >                                            else SmartBranch es [] ns ps  
 > closepaths (SmartBranch es ts ns ps) = SmartBranch es (map closepaths ts) ns ps
 
+> smartercfc :: (Tree -> Tree) -> Tree -> Tree
+> smartercfc rule tree = if tree == (rule tree)
+>                            then tree
+>                            else smartcfc (rule tree)   
+
 
 ALL RULES
 
 Branching
 
-> disj xs = cfc (applydisj xs)
-> negconj xs = cfc (applynegconj xs)
-> con xs = cfc (applycond xs)
-> bicon xs = cfc (applybicond xs)
-> negbicon xs = cfc (applynegbicond xs)
+> disj xs = cfc applydisj xs
+> negconj xs = cfc applynegconj xs
+> con xs = cfc applycond xs
+> bicon xs = cfc applybicond xs
+> negbicon xs = cfc applynegbicond xs
 
 NonBranching
 
-> conj xs = cfc (applyconj xs)
-> negdisj xs = cfc (applynegdisj xs)
-> negcon xs = cfc (applynegcond xs)
-> negsome xs = cfc (applynegexe xs)
-> negall xs = cfc (applyneguni xs)
+> conj xs = cfc applyconj xs
+> negdisj xs = cfc applynegdisj xs
+> negcon xs = cfc applynegcond xs
+> negsome xs = cfc applynegexe xs
+> negall xs = cfc applyneguni xs
 
 Double Negation
 
-> dneg xs = cfc (applydneg xs)
+> dneg xs = cfc applydneg xs
 
 Quantifiers
 
-> exi xs = cfc (applyexi xs)
-> uni xs = cfc (applyuni xs)
+> exi xs = cfc applyexi xs
+> uni xs = cfc applyuni xs
 
 
 > loopdneg x | dneg x == dneg (dneg x) = dneg x
@@ -672,7 +677,7 @@ Quantifiers
 
 > alls' xs = allnon $ exi $ allnon $ negbicon $ allnon $ bicon $ allnon $ con $ allnon $ negconj $ allnon $ disj  $ allnon xs
 
-> idd x = cfc (applyid x)
+> idd x = cfc applyid x
 
 > loopid x | idd x == idd (idd x) = idd x
 >          | otherwise = loopid (idd x)
@@ -790,8 +795,8 @@ Quantifiers
 
 
 > icfc :: [(Tree,String)] -> [(Tree,String)]
-> icfc xs = if (fst (last xs)) /= cfc (fst (last xs)) 
->                 then xs ++ [(cfc (fst (last xs)),"applying closure rule...")]
+> icfc xs = if (fst (last xs)) /= oldcfc (fst (last xs)) 
+>                 then xs ++ [(oldcfc (fst (last xs)),"applying closure rule...")]
 >                 else xs
 
 
@@ -837,14 +842,30 @@ Okay, the idea for the incremental maketree function is to generalise the above 
 > iicfc xs = do
 >                clearScreen
 >                setCursorPosition 0 0
->                if xs /= cfc xs 
+>                if xs /= oldcfc xs 
 >                    then do 
 >                         putStrLn "applied the rule for closure...\n"
->                         putStrLn (printtree $ cfc xs)
+>                         putStrLn (printtree $ oldcfc xs)
 >                         threadDelay mydelay
->                         return (cfc xs)
+>                         return (oldcfc xs)
 >                    else do
 >                         return (xs)
+
+> smarteriicfc :: (Tree -> IO (Tree)) -> Tree -> IO (Tree)
+> smarteriicfc rule tree = do
+>                          newtree <- rule tree
+>                          if tree == newtree
+>                              then return (newtree)
+>                              else do
+>                                   clearScreen
+>                                   setCursorPosition 0 0
+>                                   putStrLn "applied the rule for closure...\n"
+>                                   putStrLn (printtree (smartcfc newtree))
+>                                   threadDelay mydelay
+>                                   return (smartcfc newtree) 
+
+
+
 
 > mydelay = 1000000
 
@@ -861,11 +882,11 @@ Okay, the idea for the incremental maketree function is to generalise the above 
 
 Branching
 
-> iidisj xs = (iiapplydisj xs) >>= iicfc
-> iinegconj xs = (iiapplynegconj xs) >>= iicfc
-> iicon xs = (iiapplycon xs) >>= iicfc
-> iibicon xs = (iiapplybicon xs) >>= iicfc
-> iinegbicon xs = (iiapplynegbicon xs) >>= iicfc
+> iidisj xs = smarteriicfc iiapplydisj xs
+> iinegconj xs = smarteriicfc iiapplynegconj xs
+> iicon xs = smarteriicfc iiapplycon xs
+> iibicon xs = smarteriicfc iiapplybicon xs
+> iinegbicon xs = smarteriicfc iiapplynegbicon xs
 
 
 > iiapplydisj :: Tree -> IO (Tree)
@@ -935,11 +956,11 @@ Branching
 
 NonBranching
 
-> iiconj xs = (iiapplyconj xs) >>= iicfc
-> iinegdisj xs = (iiapplynegdisj xs) >>= iicfc
-> iinegcon xs = (iiapplynegcon xs) >>= iicfc
-> iinegsome xs = (iiapplynegsome xs) >>= iicfc
-> iinegall xs = (iiapplynegall xs) >>= iicfc
+> iiconj xs = smarteriicfc iiapplyconj xs
+> iinegdisj xs = smarteriicfc iiapplynegdisj xs
+> iinegcon xs = smarteriicfc iiapplynegcon xs
+> iinegsome xs = smarteriicfc iiapplynegsome xs
+> iinegall xs = smarteriicfc iiapplynegall xs
 
 
 > iiapplyconj :: Tree -> IO (Tree)
@@ -1009,7 +1030,7 @@ NonBranching
 
 Double Negation
 
-> iidneg xs = (iiapplydneg xs) >>= iicfc
+> iidneg xs = smarteriicfc iiapplydneg xs
 
 > iiapplydneg :: Tree -> IO (Tree)
 > iiapplydneg xs = do
@@ -1026,8 +1047,8 @@ Double Negation
 
 Quantifiers
 
-> iiexi xs = (iiapplyexi xs) >>= iicfc
-> iiuni xs = (iiapplyuni xs) >>= iicfc
+> iiexi xs = smarteriicfc iiapplyexi xs
+> iiuni xs = smarteriicfc iiapplyuni xs
 
 > iiapplyexi :: Tree -> IO (Tree)
 > iiapplyexi xs = do
@@ -1078,7 +1099,7 @@ Quantifiers
 > iialls' xs = iiallnon xs >>= iidisj >>= iiallnon >>= iinegconj >>= iiallnon >>= iicon >>= iiallnon >>= iibicon >>= iiallnon >>= iinegbicon >>= iiallnon >>= iiexi >>= iiallnon
 
 
-> iiidd x = (iiapplyid x) >>= iicfc
+> iiidd x = smarteriicfc iiapplyid x
 
 > iiapplyid :: Tree -> IO (Tree)
 > iiapplyid xs = do
