@@ -27,6 +27,7 @@ dependencies:
 - deepseq
 - pretty
 - boxes
+- time
 
 library:
   source-dirs: src

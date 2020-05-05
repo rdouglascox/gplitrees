@@ -1,4 +1,4 @@
-> module MakeTree (Tree(..),Elem(..),SmartTree(..),maketree,imaketree,iimaketree,treestats,readmodels) where
+> module MakeTree (Tree(..),Elem(..),SmartTree(..),maketree,imaketree,iimaketree,readtree,treestats,readmodels,readtree') where
 
 > import DataProp
 > import DataTree
@@ -8,21 +8,20 @@
 > import GPLIevaluator
 > import PrintModels
 > import Control.Concurrent
-> import Control.Parallel.Strategies
 > import System.Console.ANSI
 
 FOR PARALLELISM
 
-> myparMap :: (a->b) -> [a] -> Eval [b]
-> myparMap f [] = return []
-> myparMap f (a:as) = do
->     b <- rpar (f a)
->     bs <- myparMap f as
->     return (b:bs)
+ myparMap :: (a->b) -> [a] -> Eval [b]
+ myparMap f [] = return []
+ myparMap f (a:as) = do
+     b <- rpar (f a)
+     bs <- myparMap f as
+     return (b:bs)
 
-> mymap x y = runEval (myparMap x y)
+ mymap x y = runEval (myparMap x y)
 
-> myconcatMap x y = concat (mymap x y)
+ myconcatMap x y = concat (mymap x y)
 
 GENERAL FUNCTIONS
 
@@ -844,7 +843,7 @@ Okay, the idea for the incremental maketree function is to generalise the above 
 >                setCursorPosition 0 0
 >                if xs /= oldcfc xs 
 >                    then do 
->                         putStrLn "applied the rule for closure...\n"
+>                         putStrLn "checked for closure...\n"
 >                         putStrLn (printtree $ oldcfc xs)
 >                         threadDelay mydelay
 >                         return (oldcfc xs)
@@ -859,7 +858,7 @@ Okay, the idea for the incremental maketree function is to generalise the above 
 >                              else do
 >                                   clearScreen
 >                                   setCursorPosition 0 0
->                                   putStrLn "applied the rule for closure...\n"
+>                                   putStrLn "checked for closure...\n"
 >                                   putStrLn (printtree (smartcfc newtree))
 >                                   threadDelay mydelay
 >                                   return (smartcfc newtree) 
@@ -1142,10 +1141,30 @@ END OF MAKETREE II
 
 TREE STATS
 
+> readtree :: Tree -> String
+> readtree t   | null (getpaths t) = "all paths close. not satisfiable."
+>              | (length (getpaths t) == 1) = "not all paths close. there is " ++ (show (length (getpaths t)))  ++ " open path." 
+>              | otherwise = "not all paths close. there are " ++ (show (length (getpaths t)))  ++ " open paths." 
+
+> readtree' :: Tree -> String
+> readtree' t   | null (getpaths t) = "not satisfiable! (by tree method)"
+>               | otherwise = "satisfiable! (by tree method)"
+
+
+
+
 > treestats :: Tree -> String
-> treestats t = if null (getpaths t)
->               then "all paths close. not satisfiable."
->               else "not all paths close. satisfiable on the following model(s):\n" 
+> treestats t = "tree stats:\n\n    number of paths (width): " ++ (show (length (getallpaths t))) ++ "\n    number of open paths: " ++ (show (length (getpaths t))) ++ "\n    number of closed paths: " ++ show ( ( (length (getallpaths t))) -  ( (length (getpaths t))) ) ++   "\n    longest path (depth): " ++ (show (maximum (map length (getallpaths t)))) ++ "\n    no. of propositions on longest path: " ++ (show (maximum (map length (map concat (getallpaths t)))))
+
+> getallpaths :: Tree -> [[[Elem]]]
+> getallpaths (Branch [] []) = [[]]
+> getallpaths (Branch es []) = [[es]]
+> getallpaths (Branch es ts) = map (es:) (concatMap getallpaths ts)
+
+
+
+
+
 
 READ MODEL OFF TREE
 
