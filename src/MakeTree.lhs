@@ -10,19 +10,6 @@
 > import Control.Concurrent
 > import System.Console.ANSI
 
-FOR PARALLELISM
-
- myparMap :: (a->b) -> [a] -> Eval [b]
- myparMap f [] = return []
- myparMap f (a:as) = do
-     b <- rpar (f a)
-     bs <- myparMap f as
-     return (b:bs)
-
- mymap x y = runEval (myparMap x y)
-
- myconcatMap x y = concat (mymap x y)
-
 GENERAL FUNCTIONS
 
 Here is a function which adds a list of elements to all open paths on a tree.

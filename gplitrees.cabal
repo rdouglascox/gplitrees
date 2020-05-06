@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4347b2100011831ecb8bf65f53785253461428aec538410b48a91c32d1d9ff73
+-- hash: e0cc7c7c29096e1a883fa8251e24ba567980760846703ba1c52ba3eb653e19e2
 
 name:           gplitrees
 version:        0.1.0.0
@@ -48,8 +48,6 @@ library
     , base >=4.7 && <5
     , boxes
     , containers
-    , deepseq
-    , parallel
     , pretty
     , time
   default-language: Haskell2010
@@ -66,9 +64,7 @@ executable gplitrees
     , base >=4.7 && <5
     , boxes
     , containers
-    , deepseq
     , gplitrees
-    , parallel
     , pretty
     , time
   default-language: Haskell2010
@@ -86,9 +82,7 @@ test-suite gplitrees-test
     , base >=4.7 && <5
     , boxes
     , containers
-    , deepseq
     , gplitrees
-    , parallel
     , pretty
     , time
   default-language: Haskell2010

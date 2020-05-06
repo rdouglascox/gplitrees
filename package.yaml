@@ -23,8 +23,6 @@ dependencies:
 - base >= 4.7 && < 5
 - containers
 - ansi-terminal
-- parallel
-- deepseq
 - pretty
 - boxes
 - time

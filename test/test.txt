@@ -1,3 +1,0 @@
-#y~Rda
-#x#y(Pacc<->Rbx)
-@x(~(Pbb&~Rbab)->~Pb)
